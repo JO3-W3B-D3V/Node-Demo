@@ -1,16 +1,18 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var sassMiddleware = require('node-sass-middleware');
+/**
+ * The purpose of this file is to start off the node
+ * application.
+ *
+ * @author jo3-w3b-d3v
+ */
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const sassMiddleware = require('node-sass-middleware');
+const app = express();
 
-var app = express();
-
-// view engine setup
+// Setup the view engine.
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'twig');
 
@@ -26,23 +28,31 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Setup the relevant routes.
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const productsRouter = require('./routes/products');
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/products', productsRouter);
 
-// catch 404 and forward to error handler
+// Handle some 404 requests.
 app.use(function(req, res, next) {
+  const createError = require('http-errors');
   next(createError(404));
 });
 
-// error handler
+// Handle all internal server errors.
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development.
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page.
   res.status(err.status || 500);
   res.render('error');
 });
 
+// Finally export the application.
 module.exports = app;
